@@ -1,12 +1,12 @@
 
 import streamlit as st
+import pandas as pd
 
-# إعداد الواجهة
+# إعداد الصفحة
 st.set_page_config(page_title="برنامج حضور الطلاب", layout="centered", page_icon="📝")
-
 st.title("🟢 برنامج حضور الطلاب")
 
-# شاشة الدخول بكلمة مرور
+# شاشة تسجيل الدخول
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -21,20 +21,34 @@ if not st.session_state.authenticated:
 else:
     st.success("مرحبًا بك! ✅")
 
-    # بقية الواجهة هنا
-    class_name = st.text_input("📚 اسم الصف الدراسي")
-    student_names = st.text_area("👥 أدخل أسماء الطلاب (كل اسم في سطر)", height=150)
+    # ✅ اختيار الصف والمادة من قوائم منسدلة
+    st.subheader("📌 معلومات الحصة:")
+    class_options = ["الصف الأول", "الصف الثاني", "الصف الثالث"]
+    subject_options = ["رياضيات", "علوم", "لغة عربية", "تاريخ"]
 
-    if student_names:
-        names = [name.strip() for name in student_names.split("\n") if name.strip()]
-        attendance = {}
-        st.subheader("📋 سجل الحضور:")
+    selected_class = st.selectbox("📚 اختر الصف الدراسي:", class_options)
+    selected_subject = st.selectbox("📘 اختر المادة:", subject_options)
 
-        for name in names:
-            attendance[name] = st.checkbox(f"{name}", key=name)
+    # 📥 رفع ملف Excel يحتوي على أسماء الطلاب
+    uploaded_file = st.file_uploader("📥 رفع ملف Excel يحتوي على عمود (الاسم):", type=["xlsx"])
 
-        if st.button("✅ حفظ الحضور"):
-            st.success("تم حفظ الحضور بنجاح!")
+    if uploaded_file:
+        try:
+            df = pd.read_excel(uploaded_file)
+            if "الاسم" not in df.columns:
+                st.error("⚠️ يجب أن يحتوي الملف على عمود اسمه 'الاسم'")
+            else:
+                names = df["الاسم"].dropna().tolist()
+                attendance = {}
+                st.subheader("📋 سجل الحضور:")
 
-        if st.button("📤 تصدير إلى Excel / PDF"):
-            st.info("ميزة التصدير قيد التطوير حالياً...")
+                for name in names:
+                    attendance[name] = st.checkbox(f"{name}", key=name)
+
+                if st.button("✅ حفظ الحضور"):
+                    st.success("تم حفظ الحضور بنجاح!")
+
+                if st.button("📤 تصدير إلى Excel / PDF"):
+                    st.info("ميزة التصدير قيد التطوير حالياً...")
+        except Exception as e:
+            st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
