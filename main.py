@@ -6,22 +6,25 @@ import pandas as pd
 st.set_page_config(page_title="برنامج حضور الطلاب", layout="centered", page_icon="📝")
 st.title("🟢 برنامج حضور الطلاب")
 
-# شاشة تسجيل الدخول
+# تخزين حالة تسجيل الدخول في الجلسة
 if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
+    st.session_state["authenticated"] = False
 
-if not st.session_state.authenticated:
+# شاشة تسجيل الدخول
+if not st.session_state["authenticated"]:
     st.subheader("🔐 تسجيل الدخول")
     password = st.text_input("أدخل كلمة المرور:", type="password")
-    if password == "1234":
-        st.session_state.authenticated = True
-        st.experimental_rerun()
-    elif password:
-        st.error("كلمة المرور غير صحيحة ❌")
+    login_btn = st.button("دخول")
+    if login_btn:
+        if password == "1234":
+            st.session_state["authenticated"] = True
+            st.success("تم تسجيل الدخول بنجاح ✅")
+        else:
+            st.error("كلمة المرور غير صحيحة ❌")
 else:
-    st.success("مرحبًا بك! ✅")
+    # بعد تسجيل الدخول
+    st.success("✅ تم تسجيل الدخول!")
 
-    # ✅ اختيار الصف والمادة من قوائم منسدلة
     st.subheader("📌 معلومات الحصة:")
     class_options = ["الصف الأول", "الصف الثاني", "الصف الثالث"]
     subject_options = ["رياضيات", "علوم", "لغة عربية", "تاريخ"]
@@ -29,14 +32,13 @@ else:
     selected_class = st.selectbox("📚 اختر الصف الدراسي:", class_options)
     selected_subject = st.selectbox("📘 اختر المادة:", subject_options)
 
-    # 📥 رفع ملف Excel يحتوي على أسماء الطلاب
-    uploaded_file = st.file_uploader("📥 رفع ملف Excel يحتوي على عمود (الاسم):", type=["xlsx"])
+    uploaded_file = st.file_uploader("📥 رفع ملف Excel يحتوي على عمود 'الاسم':", type=["xlsx"])
 
     if uploaded_file:
         try:
             df = pd.read_excel(uploaded_file)
             if "الاسم" not in df.columns:
-                st.error("⚠️ يجب أن يحتوي الملف على عمود اسمه 'الاسم'")
+                st.error("⚠️ الملف لا يحتوي على عمود اسمه 'الاسم'")
             else:
                 names = df["الاسم"].dropna().tolist()
                 attendance = {}
