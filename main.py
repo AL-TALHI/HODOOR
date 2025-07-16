@@ -6,23 +6,18 @@ import pandas as pd
 st.set_page_config(page_title="برنامج حضور الطلاب", layout="centered", page_icon="📝")
 st.title("🟢 برنامج حضور الطلاب")
 
-# تخزين حالة تسجيل الدخول في الجلسة
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-# شاشة تسجيل الدخول
-if not st.session_state["authenticated"]:
+# --- شاشة الدخول ---
+def show_login():
     st.subheader("🔐 تسجيل الدخول")
     password = st.text_input("أدخل كلمة المرور:", type="password")
-    login_btn = st.button("دخول")
-    if login_btn:
+    if st.button("دخول"):
         if password == "1234":
-            st.session_state["authenticated"] = True
-            st.success("تم تسجيل الدخول بنجاح ✅")
+            st.session_state.authenticated = True
         else:
             st.error("كلمة المرور غير صحيحة ❌")
-else:
-    # بعد تسجيل الدخول
+
+# --- واجهة التطبيق بعد الدخول ---
+def show_main_app():
     st.success("✅ تم تسجيل الدخول!")
 
     st.subheader("📌 معلومات الحصة:")
@@ -54,3 +49,12 @@ else:
                     st.info("ميزة التصدير قيد التطوير حالياً...")
         except Exception as e:
             st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
+
+# --- نقطة البدء ---
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if st.session_state.authenticated:
+    show_main_app()
+else:
+    show_login()
