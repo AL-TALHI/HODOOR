@@ -6,17 +6,18 @@ import pandas as pd
 st.set_page_config(page_title="برنامج حضور الطلاب", layout="centered", page_icon="📝")
 st.title("🟢 برنامج حضور الطلاب")
 
-# --- شاشة الدخول ---
+# --- تسجيل الدخول ---
 def show_login():
     st.subheader("🔐 تسجيل الدخول")
     password = st.text_input("أدخل كلمة المرور:", type="password")
     if st.button("دخول"):
         if password == "1234":
-            st.session_state.authenticated = True
+            st.session_state["authenticated"] = True
+            st.experimental_set_query_params(logged_in="true")
         else:
             st.error("كلمة المرور غير صحيحة ❌")
 
-# --- واجهة التطبيق بعد الدخول ---
+# --- التطبيق بعد تسجيل الدخول ---
 def show_main_app():
     st.success("✅ تم تسجيل الدخول!")
 
@@ -50,9 +51,10 @@ def show_main_app():
         except Exception as e:
             st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
 
-# --- نقطة البدء ---
+# --- نقطة الانطلاق ---
+query_params = st.experimental_get_query_params()
 if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
+    st.session_state.authenticated = "logged_in" in query_params
 
 if st.session_state.authenticated:
     show_main_app()
