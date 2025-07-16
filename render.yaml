@@ -1,0 +1,10 @@
+
+services:
+  - type: web
+    name: hodoor-attendance
+    env: python
+    buildCommand: ""
+    startCommand: streamlit run main.py --server.port=$PORT
+    envVars:
+      - key: PORT
+        value: 10000

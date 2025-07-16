@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 
-# إعداد الصفحة
 st.set_page_config(page_title="برنامج حضور الطلاب", layout="centered", page_icon="📝")
 st.title("🟢 برنامج حضور الطلاب")
 
@@ -51,7 +50,7 @@ def show_main_app():
         except Exception as e:
             st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
 
-# --- نقطة الانطلاق ---
+# --- نقطة البداية ---
 query_params = st.experimental_get_query_params()
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = "logged_in" in query_params
